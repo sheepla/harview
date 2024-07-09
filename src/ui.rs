@@ -143,9 +143,10 @@ impl HeaderPreview {
 impl Widget for HeaderPreview {
     fn render(self, area: Rect, buf: &mut Buffer)
     where
-        Self: Sized {
-            if let Some(header_info) = self.header_info {
-                todo!()
-            }
+        Self: Sized,
+    {
+        if let Some(header_info) = self.header_info {
+            todo!();
+        }
     }
 }

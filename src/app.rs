@@ -105,6 +105,23 @@ impl HarData {
     pub fn to_header_info(&self, index: usize) -> Option<HeaderInfo> {
         if let Some(entry) = self.0.log.entries.get(index) {
             return Some(HeaderInfo {
+                status: entry.response.status,
+                method: entry.request.method.clone(),
+                http_version: entry.request.http_version.clone(),
+                url: entry.request.url.clone(),
+                referrer_policy: entry
+                    .request
+                    .headers
+                    .iter()
+                    .filter(|header| header.name.eq_ignore_ascii_case("Referrer-Policy"))
+                    .map(|header| header.value.clone())
+                    .next(),
+                query_params: entry
+                    .request
+                    .query_string
+                    .iter()
+                    .map(|query| (query.name.clone(), query.value.clone()))
+                    .collect(),
                 req_headers: entry
                     .request
                     .headers
@@ -232,10 +249,7 @@ impl TableItem {
                 self.status.to_string(),
                 Style::default().fg(Color::LightMagenta).bold(),
             ),
-            0 => Span::styled(
-                "---",
-                Style::default().fg(Color::DarkGray).bold(),
-            ),
+            0 => Span::styled("---", Style::default().fg(Color::DarkGray).bold()),
             _ => Span::styled(
                 self.status.to_string(),
                 Style::default().bg(Color::DarkGray),
@@ -296,6 +310,12 @@ pub enum TabItem {
 
 #[derive(Debug)]
 pub struct HeaderInfo {
+    status: i64,
+    method: String,
+    http_version: String,
+    url: url::Url,
+    query_params: Vec<(String, String)>,
+    referrer_policy: Option<String>,
     req_headers: Vec<(String, String)>,
     resp_headers: Vec<(String, String)>,
 }
