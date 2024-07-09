@@ -3,7 +3,7 @@ use std::{fs, io::BufReader, path::Path};
 use url::Url;
 
 impl Har {
-    pub fn from_file(path: &Path) -> anyhow::Result<Self> {
+    pub async fn from_file(path: &Path) -> anyhow::Result<Self> {
         let file = fs::File::open(path)?;
         let reader = BufReader::new(file);
         let har = serde_json::from_reader(reader)?;
