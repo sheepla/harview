@@ -35,7 +35,7 @@ impl<'a> EntriesTable {
         state.select(Some(index));
 
         Self {
-            table_items: app.har_data.to_table_items(),
+            table_items: app.har.to_table_items(),
         }
     }
 
@@ -46,7 +46,7 @@ impl<'a> EntriesTable {
             Cell::from("Domain"),
             Cell::from("FileName"),
             Cell::from("ContentType"),
-            Cell::from("       Size"),
+            Cell::from("     Size  "),
         ])
         .style(Style::default().bold().underlined());
 
@@ -135,7 +135,7 @@ struct HeaderPreview {
 impl HeaderPreview {
     pub fn init(app: &App) -> Self {
         Self {
-            header_info: app.har_data.to_header_info(app.get_index()),
+            header_info: app.har.to_header_info(app.get_index()),
         }
     }
 }

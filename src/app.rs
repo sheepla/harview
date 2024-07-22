@@ -6,19 +6,18 @@ use url;
 pub struct App {
     pub running: bool,
     index: usize,
-    pub har_data: HarData,
+    pub har: Har,
     //pub preview_widget_state: PreviewWidetState,
     pub tabbar_state: TabBarState,
 }
 
 impl App {
-    pub fn init(har: HarData) -> Self {
+    pub fn init(har: Har) -> Self {
         Self {
             running: true,
             index: 0,
             tabbar_state: TabBarState::Headers,
-            har_data: har,
-            //preview_widget_state: PreviewWidetState::Bottom,
+            har: har,
         }
     }
 
@@ -29,7 +28,7 @@ impl App {
     }
 
     pub fn max_index(&self) -> usize {
-        self.har_data.0.log.entries.len()
+        self.har.log.entries.len()
     }
 
     pub fn update_index(&mut self, delta: i32) {
@@ -48,7 +47,7 @@ impl App {
     }
 
     pub fn update_index_last(&mut self) {
-        self.index = self.har_data.0.log.entries.len() - 1
+        self.index = self.har.log.entries.len() - 1
     }
 
     //pub fn set_preview_widget_state(&mut self, state: &PreviewWidetState) {
@@ -63,13 +62,11 @@ impl App {
     }
 }
 
-#[derive(Debug)]
-pub struct HarData(pub crate::Har);
+type Har = crate::Har;
 
-impl HarData {
+impl Har {
     pub fn to_table_items(&self) -> Vec<TableItem> {
-        self.0
-            .log
+        self.log
             .entries
             .iter()
             .map(|entry| {
@@ -103,7 +100,7 @@ impl HarData {
     }
 
     pub fn to_header_info(&self, index: usize) -> Option<HeaderInfo> {
-        if let Some(entry) = self.0.log.entries.get(index) {
+        if let Some(entry) = self.log.entries.get(index) {
             return Some(HeaderInfo {
                 status: entry.response.status,
                 method: entry.request.method.clone(),
@@ -140,8 +137,8 @@ impl HarData {
         None
     }
 
-    pub fn to_cookie_info(har: &HarData, index: usize) -> Option<CookieInfo> {
-        if let Some(entry) = har.0.log.entries.get(index) {
+    pub fn to_cookie_info(har: &Har, index: usize) -> Option<CookieInfo> {
+        if let Some(entry) = har.log.entries.get(index) {
             return Some(CookieInfo {
                 req_cookies: entry
                     .request

@@ -30,8 +30,10 @@ struct Args {
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let args = Args::parse();
-    let har = Har::from_file(args.path.as_path()).await.context("failed to parse HAR file")?;
-    let mut app = app::App::init(app::HarData(har));
+    let har = Har::from_file(args.path.as_path())
+        .await
+        .context("failed to parse HAR file")?;
+    let mut app = app::App::init(har);
     run(&mut app).await?;
 
     Ok(())
