@@ -1,6 +1,7 @@
 use crate::app::App;
 use crate::event::EventHandler;
 use crate::ui;
+use anyhow::Context;
 use crossterm::event::{DisableMouseCapture, EnableMouseCapture};
 use crossterm::terminal::{self, EnterAlternateScreen, LeaveAlternateScreen};
 use ratatui::backend::Backend;
@@ -24,13 +25,18 @@ impl<B: Backend> Tui<B> {
         crossterm::execute!(io::stderr(), EnterAlternateScreen, EnableMouseCapture)?;
 
         let panic_hook = panic::take_hook();
+
         panic::set_hook(Box::new(move |panic| {
-            Self::reset().expect("failed to reset the terminal");
+            Self::reset().expect("failed to reset terminal");
             panic_hook(panic);
         }));
 
-        self.terminal.hide_cursor()?;
-        self.terminal.clear()?;
+        self.terminal
+            .hide_cursor()
+            .context("failed to hide cursor")?;
+        self.terminal
+            .clear()
+            .context("failed to clear terminal screen")?;
         Ok(())
     }
 
@@ -40,8 +46,10 @@ impl<B: Backend> Tui<B> {
     }
 
     fn reset() -> anyhow::Result<()> {
-        terminal::disable_raw_mode()?;
-        crossterm::execute!(io::stderr(), LeaveAlternateScreen, DisableMouseCapture)?;
+        terminal::disable_raw_mode().context("failed to disable raw mode")?;
+        crossterm::execute!(io::stderr(), LeaveAlternateScreen, DisableMouseCapture)
+            .context("failed to leave alternate screen and disable mouse capture")?;
+
         Ok(())
     }
 
