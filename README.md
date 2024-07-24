@@ -41,7 +41,7 @@ It supports the HAR format, which can be exported in the following browsers:
 
 ### Use *harview* TUI
 
-To use harview, specify the path of the HAR file as the first argument. Once the HAR file is loaded, an entry in the HTTP log will appear in the table.
+To use harview, specify the path of the HAR file as the first argument. Once the HAR file is loaded, entries in the HTTP log will appear in the table.
 
 ```sh
 harview example.com.har
